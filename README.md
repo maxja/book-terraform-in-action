@@ -36,3 +36,15 @@ The engine of Terraform called Terraform core and it's free, open-source softwar
 offered under [Mozilla Public License v2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
 > Another example of HCL usage, — configuration files for [vagrant](https://www.vagrantup.com/).
+
+HCL is a declarative, so that configurations express desired result and not
+gave exact instruction how to achieve it.
+
+Terraform is cloud-agnostic, means that it uses the same approach to run on any
+desired vendor, despite their API peculiarities.
+
+The only limitation is to have right _Terraform provider_ (plugin) for desired vendor, which can be found in [Terraform registry](https://registry.terraform.io/browse/providers).
+Those providers are written in [Go](https://go.dev/) language and distributed in
+a binary form.
+
+Providers take care of authentication, making API requests and handle errors.
