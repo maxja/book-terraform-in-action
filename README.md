@@ -2,7 +2,7 @@
 
 # [Terraform in Action by Scott Winkler](https://www.goodreads.com/book/show/50542114-terraform-in-action?from_search=true&from_srp=true&qid=yYmNexMK5C&rank=1)
 
-> Disclaimer
+> _Disclaimer_
 >
 > All rights belongs to author (Scott Winkler) and publisher (Manning Publications Co.).
 
@@ -48,3 +48,63 @@ Those providers are written in [Go](https://go.dev/) language and distributed in
 a binary form.
 
 Providers take care of authentication, making API requests and handle errors.
+
+> Author suggests to use AWS as a playground.
+
+> Terraform needed to be [installed](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-terraform).
+
+Plan for Hello Terraform:
+
+1. Write Terraform configuration file.
+2. Configure AWS provider.
+3. Initialize Terraform with `terraform init`.
+4. Deploy the [EC2](https://aws.amazon.com/ec2/)
+   (Elastic Compute Cloud) instance with `terraform apply`.
+5. Clean up with `terraform destroy`.
+
+> All original book's code can be found on a [github](https://github.com/terraform-in-action/manning-code).
+
+Terraform reads `.tf`'s config files as a guide to provisioning
+infrastructure.
+
+Author suggest to create `main.tf` configuration file, that can be found by
+`p01/ch01/sub0102/main.tf` path of this repo. This configuration operates resources for Frankfurt region.
+
+Defined resource prefixed with keyword `resource`, followed by the provider specific
+resource type in a double quotes, and given resource name in the double quotes also.
+Resources can be anything, that vendor suggested: virtual machines, load balancers,
+gateways, and so forth.
+Then, in the curly braces the configuration given.
+
+`instance_type` specifies certain resource identifier provided by vendor.
+Note, that not every resource identifier varies between different regions.
+
+> Available regions for AWS could be found by this link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html?icmpid=docs_iam_console#id_credentials_region-endpoints
+
+> AWS EC2, region dependent, instance types could be found by this link https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#InstanceTypes:
+>
+> Change the value of `region=` query parameter to compare, or find proper one.
+
+> For example, N. Virginia location offers smallest instance `t1.micro`, where
+> Frankfurt only `t2.nano`.
+
+> Pay attention to `Free-Tier eligible` if you intended to just play around.
+>
+> e.g.: `t2.micro` EC2 instance type.
+
+`ami` specifies certain AWS image to be deployed on top of chosen instance.
+It is id assigned by AWS an it needs to be chosen regarding requested instance
+type's architecture, CPU and memory availability.
+
+> AMI ID is a vendor/region specific value.
+
+> Complete list of AMIs can be found by this link https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images
+
+`tags` user-defined identifiers in a Key=Value manner.
+
+Each resources has inputs, or arguments, and outputs, called attributes. There
+are also computes attributes, which only available after resource has been created.
+
+Provider / region isolation should be defined in a `provider` section.
+
+Providers do not have outputs.
