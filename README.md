@@ -6,6 +6,8 @@
 >
 > All rights belongs to author (Scott Winkler) and publisher (Manning Publications Co.).
 
+[TOC]
+
 ## Part 1 Terraform bootcamp
 
 ### Chapter 1 Getting started with Terraform
@@ -79,9 +81,9 @@ Then, in the curly braces the configuration given.
 `instance_type` specifies certain resource identifier provided by vendor.
 Note, that not every resource identifier varies between different regions.
 
-> Available regions for AWS could be found by this link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html?icmpid=docs_iam_console#id_credentials_region-endpoints
+> Available regions for AWS could be found by this link: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html?icmpid=docs_iam_console#id_credentials_region-endpoints
 
-> AWS EC2, region dependent, instance types could be found by this link https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#InstanceTypes:
+> AWS EC2, region dependent, instance types could be found by this link: https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#InstanceTypes:
 >
 > Change the value of `region=` query parameter to compare, or find proper one.
 
@@ -98,7 +100,7 @@ type's architecture, CPU and memory availability.
 
 > AMI ID is a vendor/region specific value.
 
-> Complete list of AMIs can be found by this link https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images
+> Complete list of AMIs can be found by this link: https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images
 
 `tags` user-defined identifiers in a Key=Value manner.
 
@@ -106,5 +108,49 @@ Each resources has inputs, or arguments, and outputs, called attributes. There
 are also computes attributes, which only available after resource has been created.
 
 Provider / region isolation should be defined in a `provider` section.
-
 Providers do not have outputs.
+
+By invoking **`terraform init`** command in a shell, in the folder with configuration
+file, terraform will discover required providers, and will try to download them
+from registry.
+
+By the end of initialization, terraform will produce lock artifacts, which will
+be considered as a version lock and defines starting point for the workspace.
+
+Nothing will be deployed, yet.
+
+To deploy new configuration to the vendor, we need to invoke another shell command
+**`terraform apply`**.
+
+> In case no credentials were provided, terraform will output an `Error` message,
+> stating, that `no valid credential source for Terraform AWS Provider found`.
+
+Each vendor may suggest it's own way to store and manage credentials.
+
+> AWS way to manage it's credentials could be found by this link: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+>
+> Basically it can be manage this way: create text file by this path
+> `~/.aws/credentials` regarding your OS, with this contents
+>
+> ```
+> [default]
+> aws_access_key_id=
+> aws_secret_access_key=
+> ```
+
+After setting up credentials, **`terraform apply`** can be invoked once again.
+
+Terraform application will output information about upcoming action,
+execution plan, and wait for enter **`yes`** keyword as a agreement to this plan.
+
+After that, it'll create requested resources.
+
+> Note, that that process might take some time to accomplish, so Terraform will
+> sequentially inform about elapsed time.
+
+Terraform will finalize execution with result info, what was changed
+in what quantity.
+
+> You can observe applied changes in a AWS management console: https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Instances:visibility=owned-by-me
+
+Current state will be written in a `.tfstate` file.
