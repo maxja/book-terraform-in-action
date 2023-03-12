@@ -6,8 +6,6 @@
 >
 > All rights belongs to author (Scott Winkler) and publisher (Manning Publications Co.).
 
-[TOC]
-
 ## Part 1 Terraform bootcamp
 
 ### Chapter 1 Getting started with Terraform
@@ -154,3 +152,17 @@ in what quantity.
 > You can observe applied changes in a AWS management console: https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Instances:visibility=owned-by-me
 
 Current state will be written in a `.tfstate` file.
+
+**`terraform show`** will printout current state in a HCL format.
+
+To maintain last command of full cycle and freed resources invoke
+**`terraform destroy`** command.
+It will produce similar information about upcoming action, execution plan as _`apply`_ command, but minuses signs (-) will identify negative operation over previously allocated resources.
+As in apply command, destroy will force you to commit on sanity check, and
+confirm action with `yes` keyword.
+
+After that, it'll destroy previously allocated resources.
+
+And, the same way as on creation, Terraform will inform about result of operation.
+
+`terraform show` can be invoked to confirm that state was actualized.
