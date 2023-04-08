@@ -182,46 +182,40 @@ After that, it'll destroy previously allocated resources.
 
 #### Upgrade
 
-Terraform can not only manipulate with static definitions, but also dynamic using
-computed data.
-Such data fetching/calculation behavior can be implemented by adding **`data`**
-sources section into configuration.
+Terraform can not only manipulate with static definitions, by known resources ids, but also dynamic using computed data.
+Such data calculation behavior can be implemented by adding **`data`** source section into configuration. 
+_Basically by querying them._
 
-Lets evaluate latest available Ubuntu OS version, and use it's AMI id.
+As an example, author suggest to evaluate latest available Ubuntu OS version, and use it's AMI id.
 
 To do that, we need to extend previous configuration with these steps:
 
-1. Modify Terraform configuration by adding data sources scope.
+1. Modify Terraform configuration by adding **`data`** sources scope.
 2. Redeploy with `terraform apply`.
 3. Clean up with `terraform destroy`.
 
-Data section should be prefixed with **`data`** followed by lookup resource data
-type, and label for returned data label to be referenced later, both in double
-quotes.
+Data section should be prefixed with **`data`** followed by lookup resource data type and label for returned data, 
+label will be referenced later. 
+Both should be presented in double quotes.
 
-Data section arguments should be wrapped around with curly braces, and they would
-define query constraints.
+Data section arguments should be wrapped around with curly braces, and they would define query constraints.
 
-Each defined data sources can be used as a reference via dot separated path,
-starting with `data` prefix, followed by lookup resource type, given label name,
-and field name that this data source will return.
+Each defined data source can be used as a reference via dot separated path, starting with **`data`** prefix, 
+followed by lookup resource type, given label name, and field name that this data source will return.
 
-Example of such dynamic configuration file can be found by this path:
-`p01/ch01/sub0103/main.tf`.
+This path can find example of such dynamic configuration file: [`p01/ch01/sub0103/main.tf`](p01/ch01/sub0103/main.tf).
 
-> As, this is a standalone configuration file, that located in a different folder
-> `terraform init` required to be executed, to initialize the workspace.
+> As, this is a standalone configuration file, that located in a different folder `terraform init` 
+> required to be executed prior applying, to initialize the workspace.
 
-Apply configuration via `terraform apply`. The output will present you with
-resolved lookup data id.
+Apply configuration via `terraform apply`. The output will present you with resolved lookup data id.
 
-> In case of given example, with calculated AWS `ami`.
+> In case of given example, calculated AWS `ami` by given arguments.
 
-After applying it, `terraform show` can be invoked to check current infrastructure
-state.
+After applying it, `terraform show` can be invoked to check current infrastructure state.
 
 `terraform destroy` will terminate and destroy previously acquired resources.
-This command will operate by acknowledging current state.
+This command will operate by acknowledging the current state.
 
 ### Chapter 2 Life cycle of a Terraform resource
 
