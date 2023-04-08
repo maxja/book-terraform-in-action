@@ -322,3 +322,9 @@ Terraform called `Create` function of a given provider to create file.
 It will read each current resource state from `.tfstate` file to ensure that they're in a desired configuration state.
 
 If you run it without changing the configuration, cli will tell you that `No changes` required.
+
+Let say you update configuration file `main.tf` by adding additional line from the book Alice in Wonderland, 
+— next run of `terraform plan` will tell you that to synchronise resource state with up-to-date configuration, 
+it intended to add additional line that you added into configuration.
+
+Terraform will call `Update` function on `apply` command run.
