@@ -36,12 +36,12 @@ using a human-readable form, and allowed to make those configurations repeatable
 
 Terraform not operate as a deployment solution, it allocates and defines infrastructure via vendor delivered resources.
 
-Terraform configurations written in a domain-specific configuration language — HCL, 
+Terraform configurations written in a domain-specific configuration language — HCL, 
 or [HashiCorp configuration language](https://github.com/hashicorp/hcl/blob/main/hclsyntax/spec.md).
 
 Configurations written in HCL can be converted 1:1 to JSON, YAML, TOML and similar formats.
 
-> Another example of HCL usage, — configuration files for [HasiCorp Packer](https://developer.hashicorp.com/packer). 
+> Another example of HCL usage, — configuration files for [HasiCorp Packer](https://developer.hashicorp.com/packer). 
 > But Packer syntax differs from terraform. 
 
 The engine of Terraform called Terraform core, and its free, open-source software offered under 
@@ -219,62 +219,99 @@ This command will operate by acknowledging the current state.
 
 ### Chapter 2 Life cycle of a Terraform resource
 
-Fundamentally, Terraform is a state management tool that performs CRUD operations
-on managed resources.
+Fundamentally, Terraform is a state management tool 
+that performs [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operations on managed resources.
 
-> Resources can be anything, it's no constraint to cloud providers, anything that
-> follows CRUD paradigm and have API can potentially become provider for terraform.
+> Resources can be anything, there are no constraints to cloud providers, anything that follows the CRUD paradigm 
+> and have access to resource API can, potentially, become a provider for terraform.
 
-Terraform can be used no only with network resources, but with local also:
-manage plaintext files, create private keys, issue certificates and as such.
+Terraform can be used not only with network resources, but also with local ones: manage plaintext files,
+create private keys, issue certificates, and as such.
 
 To maintain such local resources, special local providers can be used.
 
-As it was mentioned, CRUD is a core concept of maintaining everything, each
-function symbolize a hook, that terraform would perform on a certain stage of
-a life-cycle. Create on resource creation, Read on plan generation, Update on
-resource update, and Delete on destroy.
+As it was mentioned, CRUD is a core concept of maintaining everything. 
+Each function symbolizes a hook that terraform would perform at a certain stage of a life-cycle. 
+Create on resource creation, Read on plan generation, Update on resource update, and Delete on destroy.
 
-> The difference between resource and data sections, is that, the last one
-> implements only Read method.
+#### Configuration
 
-Author introduce us to new configuration section called `terraform`.
-...
+Author suggests us to create terraform configuration to maintain plaintext file with a bit of contents.
 
-As it was previously mentioned to maintain local resource, one of a terraform
-provider required.
+This path can find example of such configuration file: [`p01/ch02/sub0202/main.tf`](p01/ch02/sub0202/main.tf).
 
-To maintain local text file, `local_file` provider will do all work. In the
-example, found by `p01/ch02/sub0202/main.tf` path, `local_file` resource
-described by two fields: `filename` with a name of a file, and `content` with
-heredoc multiline string given.
+To maintain local text file, `local_file` provider will do all work.
+Terraform will resolve this provider reference as "hashicorp/local" by default, with the latest version.
 
-> [Heredoc](https://en.wikipedia.org/wiki/Here_document) is a character sequence,
-> which allowed to give a multiline string as an input.
->
+`resource` section with specified `local_file` provider required certain arguments: `filename` and `content`.
+
+`filename` — defines a relative path of the file with given filename.
+
+`content` — future file contents. It uses [Heredoc](https://en.wikipedia.org/wiki/Here_document) notation to define 
+contents in place.
+
 > In an HCL format such text formatting preserves POSIX shell notation (`<<-`),
 > which ignores preceding tabs of each line.
 
-> Doesn't matter EOF EOT
+> `EOF` is a wrap-around sequence where content should be placed. Heredoc doesn't intend on a specific character sequence. 
+>
+> _I will use a quote from Alice in wonderland as an example content._
 
-> `terraform init` command is idempotent, — meaning, you can call it as many
-> times as you like, and it'll grant you with the same result.
+To specify providers' dependencies in the more precise way `terraform` section can be used.
+This section describes requirements and dependencies for the current configuration.
 
-> Initialization creates hidden directory `.terraform` for installed plugins
-> and modules.
+> In previous configuration samples, terraform resolves dependencies automatically from `resource` sections.
 
-> `provider` section for local is optional, and can be declared empty.
+`terraform` section can specify a required terraform version constraints as a value of `required_version` argument, 
+as well as providers' dependencies given in a `required_providers` subsection.
 
-`terraform plan`
+> _Note_ that some crucial configuration changes might be required regarding a major terraform version. 
+> 
+> Don't, really on backward capability while change from 0.x.x to 1.x.x and upper.
 
-> TF_LOG=trace
+`required_providers` defines dependencies' constraints, as unique provider local name followed by arguments, 
+`source` — name of the provider in the registry, and `version` constraint.
 
-`terraform graph`
+#### Commands
 
-`terraform plan -out plan.out`
+Do a `terraform init` to initialize workspace.
 
-`terraform show -json plan.out`
+> `terraform init` command is idempotent, — meaning, you can call it as many times as you like, 
+> and you'll get the same result unless something was changed in a configuration.
+>
+> Initialization creates hidden directory `.terraform` for installed plugins and modules in it.
 
-`terraform apply`
+Previously we use `terraform apply` and it gave us execution plan that we required to agree on.
 
-`terraform apply "plan.out"`
+You can request `terraform plan` without applying it. 
+
+This command will test or dry run your configuration and check if it's ok.
+
+> Defined `TF_LOG` environment variable with different [severity level](https://en.wikipedia.org/wiki/Syslog) 
+> will force terraform cli to log out performed steps.  
+
+> `terraform plan` also can be invoked with `-parallelism=n` flag to enforce terraform to execute some routines 
+> in-parallel within `n` given threads.
+
+Such execution plan can be stored as a binary file artifact via `-out` flag of a command, and can be used later 
+as an input argument of a `terraform apply` command or via third party tool.
+
+> To convert it to a readable JSON form, `terraform show` command can be used supporting with `-json` flag 
+> and the name of an out file, saved previously.
+> 
+> `terraform show - json plan.out`
+
+Terraform creates a dependency graph as a part of building execution plan.
+
+It can be requested an in a [DOT graphs](https://graphviz.org/doc/info/lang.html) notation form via `terraform graph`.
+
+Dependency graph is a guideline for `terraform apply` command.
+
+Previously saved execution plan can be applied via `terraform apply "plan.out"`.
+
+By running this command, two files will be created, described plaintext file ('alice-in-wonderland.txt' in my example), 
+and `terraform.tfstate` which will describe current state of described resources, and will be used as a start point 
+to perform diffs during next `plan` execution and will detect configuration drift.
+
+> Author warns to not edit or move/delete such files as they're crucial for terraform to track changes 
+> and calculation required actions.
