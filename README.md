@@ -315,3 +315,10 @@ to perform diffs during next `plan` execution and will detect configuration drif
 
 > Author warns to not edit or move/delete such files as they're crucial for terraform to track changes 
 > and calculation required actions.
+
+Terraform called `Create` function of a given provider to create file.
+
+`Read` function will be used by terraform when next plan command will be executed. 
+It will read each current resource state from `.tfstate` file to ensure that they're in a desired configuration state.
+
+If you run it without changing the configuration, cli will tell you that `No changes` required.
