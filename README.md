@@ -328,3 +328,13 @@ Let say you update configuration file `main.tf` by adding additional line from t
 it intended to add additional line that you added into configuration.
 
 Terraform will call `Update` function on `apply` command run.
+
+> If you alter `filename` to some other filename, terraform will acknowledge that, remove previous file 
+> and create a new one.
+
+In this example, any change will force terraform for immutable changes, meaning re-creation of a file.
+But if possible, terraform will try to create in-place changes at-first.
+
+> `terraform plan` is an important command to monitor and control upcoming changes.
+
+> `-auto-approve` flag for `terraform apply` command skips required sanity check.
