@@ -338,3 +338,27 @@ But if possible, terraform will try to create in-place changes at-first.
 > `terraform plan` is an important command to monitor and control upcoming changes.
 
 > `-auto-approve` flag for `terraform apply` command skips required sanity check.
+
+#### Configuration drift
+
+Imagine a situation when someone, including yourself, made direct changes into resource, 
+adding a paragraph of a text into the example file.
+
+You might expect to terraform acknowledge such configuration drift on a next `terraform plan`, 
+but it'll just suggest creating fresh new setup, as if no resource was registered.
+
+At the same time, current expected state acknowledges file existence (`terraform show`).
+
+As the author suggests, it might happen because of provider implementation of a read function.
+
+Terraform has another useful command to reconcile the state and acknowledge what was altered, 
+it's called `terraform refresh`.
+
+@TODO: I didn't understand how to acknowledge such incidents, need to read further.
+
+`terraform apply` will resolve this issue to original configuration state.
+
+And `terraform destroy` will release accused resources.
+Within `-auto-approve` flag it'll do it without forcing you to confirm your decision.
+
+Destroy command will trigger `Delete` method of a given provider.
